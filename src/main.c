@@ -1,13 +1,14 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
+#include "scanner.h"
 
 // Functions prototypes declarations
 void run(const char *input);
 void runFile(const char *path);
 void runPrompt();
+
 uint8_t *readFileBytes(const char *filename, size_t *fileSize);
+
+void error(int line, char *message);
+void report(int line, char *message, char *where);
 
 int main(int argc, char *argv[])
 {
@@ -28,9 +29,18 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void run(const char *input)
+void run(const char *source)
 {
-    printf("%s", input);
+    Scanner *scanner = createScanner(source);
+    if (!scanner)
+        return;
+
+    Token **tokens = scanTokens(scanner);
+
+    for (int i = 0; i < scanner->tokenCount; i++)
+    {
+        printToken((const Token *)tokens[i]);
+    }
 }
 
 void runFile(const char *path)
